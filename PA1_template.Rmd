@@ -44,7 +44,7 @@ head(by_date, 10)
 ```
 
 A histogram is displayed, showing the total number of steps per day:
-```{r}
+```{r, echo = true}
 hist(by_date$TotalNumberOfSteps, main = "Histogram for Total # of Steps Per Day", xlab = "Total Steps Per Day")
 ```
 
@@ -86,7 +86,7 @@ head(dataReplaceNA,10)
 ```
 
 Group by date and calculate the total steps:
-```{r}
+```{r, echo = true}
 dataReplaceNA_byDate <- summarize(group_by(dataReplaceNA, date), sum = sum(steps))
 hist(dataReplaceNA_byDate$sum, main = "Histogram for Total # of Steps Per Day", xlab = "Total Steps Per Day")
 ```
@@ -113,7 +113,7 @@ head(dataReplaceNA, 10)
 ```
 
  We can compute the activity again, this time separating the data not only by interval but also by the Weekend factor.
-```{r}
+```{r, echo = true}
 xyplot(steps ~  interval | Weekday, data = dataReplaceNA, layout = c(1,2), type ="l", ylab="Number of Steps")
 ```
 
