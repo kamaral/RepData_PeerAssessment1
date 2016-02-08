@@ -6,64 +6,36 @@ It is now possible to collect a large amount of data about personal movement usi
 This assignment makes use of data from a personal activity monitoring device. This device collects data at 5 minute intervals through out the day. The data consists of two months of data from an anonymous individual collected during the months of October and November, 2012 and include the number of steps taken in 5 minute intervals each day.
 
 ## Loading and preprocessing the data
-1. Load the activity data
+- Load the activity data
 
 ```r
 rawData <- read.csv("activity.csv")
 ```
 
-2. Load the necessary libraries (dplyr, lattice & timeDate)
+- Load the necessary libraries (dplyr, lattice & timeDate)
 
 ```r
 library(dplyr)
-```
-
-```
-## Warning: package 'dplyr' was built under R version 3.2.3
-```
-
-```
-## 
-## Attaching package: 'dplyr'
-```
-
-```
-## The following objects are masked from 'package:stats':
-## 
-##     filter, lag
-```
-
-```
-## The following objects are masked from 'package:base':
-## 
-##     intersect, setdiff, setequal, union
-```
-
-```r
 library(lattice)
 library(timeDate)
-```
-
-```
-## Warning: package 'timeDate' was built under R version 3.2.3
 ```
 
 
 ## What is mean total number of steps taken per day?
 
-3. Ignore the missing values in the dataset
+- Ignore the missing values in the dataset
 
 ```r
 dataNoNa <-filter(rawData, is.na(steps) == FALSE)
 ```
 
-4. Using the dplyr group_by functionality, group by date and calculate the total steps per dat
+- Using the dplyr group_by functionality, group by date and calculate the total steps per dat
 
 ```r
 by_date <- summarize(group_by(dataNoNa, date), TotalNumberOfSteps = sum(steps))
 ```
 
-With this, the mean total number of steps taken per day has been calculated. The below table shows the total number of steps taken per day, for the first 10 days
+- With this, the mean total number of steps taken per day has been calculated. The below table shows the total number of steps taken per day, for the first 10 days
 
 ```r
 head(by_date, 10)
@@ -86,7 +58,7 @@ head(by_date, 10)
 ## 10 2012-10-12              17382
 ```
 
-A histogram is displayed, showing the total number of steps per day:
+- A histogram is displayed, showing the total number of steps per day:
 
 ```r
 hist(by_date$TotalNumberOfSteps, main = "Histogram for Total # of Steps Per Day", xlab = "Total Steps Per Day")
@@ -94,7 +66,7 @@ hist(by_date$TotalNumberOfSteps, main = "Histogram for Total # of Steps Per Day"
 
 ![](PA1_template_files/figure-html/unnamed-chunk-6-1.png)
 
-The mean and median for of the total steps taken per day, is show below for the first 10 days:
+- The mean and median for of the total steps taken per day, is show below for the first 10 days:
 
 ```r
 by_data_withMeanMedian <- summarize(group_by(dataNoNa, date), TotalSteps = sum(steps), MeanSteps = mean(steps), MedianSteps = median(steps))
@@ -118,13 +90,13 @@ head(by_data_withMeanMedian, 10)
 ## 10 2012-10-12      17382  60.35417           0
 ```
 ## What is the average daily activity pattern?
-1. Calculating the average number of steps taken, averaged across all days:
+- Calculating the average number of steps taken, averaged across all days for each interval:
 
 ```r
 by_int <- summarize(group_by(dataNoNa, interval), mean = mean(steps))
 ```
 
-2. Plotting the average daily activity patter
+- Plotting the average daily activity pattern
 
 ```r
 plot(by_int$interval, by_int$mean, type = "l", main = "Average steps per Interval", xlab = "Interval", ylab = "Average Steps")
@@ -132,7 +104,7 @@ plot(by_int$interval, by_int$mean, type = "l", main = "Average steps per Interva
 
 ![](PA1_template_files/figure-html/unnamed-chunk-9-1.png)
 
-3. The 5-minute interval that contains the maximum number of steps is 835 interval, and the number of steps is 206:
+- The 5-minute interval that contains the maximum number of steps is 835th interval, with ~206 steps:
 
 ```r
 head(arrange(by_int, desc(mean)), 1)
@@ -147,7 +119,7 @@ head(arrange(by_int, desc(mean)), 1)
 ```
 
 ## Imputing missing values
-The total number of missing values in the dataset (where steps is null) is 2304
+- The total number of missing values in the dataset (where steps is null) is 2304 records.
 
 ```r
  count(filter(rawData, is.na(steps) == TRUE))
@@ -161,13 +133,13 @@ The total number of missing values in the dataset (where steps is null) is 2304
 ## 1  2304
 ```
 
-Creating a new dataset that is equal to the original dataset but with the missing data filled in. The strategy for filling in all of the missing values in the dataset, is to replace the NA with the mean of that 5-minute interval.
+- A  new dataset is created, which  is equal to the original dataset but with the missing data filled in. The strategy for filling in all of the missing values in the dataset, is to replace the NA with the mean of that 5-minute interval.
 
 ```r
 dataReplaceNA <- rawData
 dataReplaceNA[is.na(rawData)] <- by_int$mean
 ```
-The first 10 results are shown below:
+- The first 10 results are shown below:
 
 ```r
 head(dataReplaceNA,10)
@@ -187,7 +159,7 @@ head(dataReplaceNA,10)
 ## 10 1.4716981 2012-10-01       45
 ```
 
-Group by date and calculate the total steps:
+-Group by date and calculate the total steps:
 
 ```r
 dataReplaceNA_byDate <- summarize(group_by(dataReplaceNA, date), sum = sum(steps))
@@ -196,7 +168,7 @@ hist(dataReplaceNA_byDate$sum, main = "Histogram for Total # of Steps Per Day", 
 
 ![](PA1_template_files/figure-html/unnamed-chunk-14-1.png)
 
-To compare the dataset with NAs and the dataset without NAs we calculate and compare the means.We notice that the mean of the complete dataset (10766.19) is equal to the mean of the dataset without missing values, which is expected since the NAs were replaced with the mean
+- To compare the dataset with NAs and the dataset without NAs, calculate and compare the means. The mean of the complete dataset (10766.19) is equal to the mean of the dataset without missing values, which is expected since the NAs were replaced with the mean
 
 ```r
 mean(dataReplaceNA_byDate$sum)
@@ -216,7 +188,7 @@ mean(by_date$TotalNumberOfSteps)
 ## Are there differences in activity patterns between weekdays and weekends?
 
 
-Using the dplyr and the timeDate package, a column is added to indicate if the dat3e is a WEEKDAY or WEEKEND
+- Using the dplyr and the timeDate package, a column is added to indicate if the dat3e is a WEEKDAY or WEEKEND
 
 ```r
 dataReplaceNA<- mutate(dataReplaceNA, Weekday = isWeekday(dataReplaceNA$date))
@@ -224,7 +196,7 @@ dataReplaceNA$Weekday <- gsub(TRUE, "WEEKDAY",dataReplaceNA$Weekday)
 dataReplaceNA$Weekday <- gsub(FALSE, "WEEKEND",dataReplaceNA$Weekday)
 ```
 
-The first 10 rows are shown below:
+- The first 10 rows are shown below:
 
 ```r
 head(dataReplaceNA, 10)
@@ -244,7 +216,7 @@ head(dataReplaceNA, 10)
 ## 10 1.4716981 2012-10-01       45 WEEKDAY
 ```
 
- We can compute the activity again, this time separating the data not only by interval but also by the Weekend factor.
+- The activity is computed again, this time separating the data not only by interval but also by the Weekend factor.
 
 ```r
 xyplot(steps ~  interval | Weekday, data = dataReplaceNA, layout = c(1,2), type ="l", ylab="Number of Steps")
@@ -252,4 +224,4 @@ xyplot(steps ~  interval | Weekday, data = dataReplaceNA, layout = c(1,2), type 
 
 ![](PA1_template_files/figure-html/unnamed-chunk-18-1.png)
 
-There is a difference between the weekday and weekend activity patterns. On Weekends, the activity is later in the day, compared to weekend on weekdays. 
+- There is a difference between the weekday and weekend activity patterns. On Weekends, the activity is later in the day, compared to weekend on weekdays. 
